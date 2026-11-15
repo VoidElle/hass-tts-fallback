@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="./assets/hero.svg" alt="TTS Fallback" width="100%">
   <h1>🗣️ TTS Fallback</h1>
   <p><em>Home Assistant text-to-speech entity that switches to a backup engine when the main one fails</em></p>
   <br>
