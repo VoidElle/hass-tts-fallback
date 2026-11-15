@@ -1,0 +1,48 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Fallback voice",
+        "data": {
+          "primary_engine": "Primary engine",
+          "primary_voice": "Primary voice",
+          "fallback_engine": "Fallback engine",
+          "fallback_voice": "Fallback voice",
+          "language": "Language",
+          "timeout": "Primary timeout (time to first audio)"
+        },
+        "data_description": {
+          "primary_voice": "Empty = engine default, e.g. it-IT-IsabellaNeural",
+          "fallback_voice": "Empty = engine default, e.g. it_IT-serena-medium",
+          "language": "Language this voice speaks, e.g. it-IT"
+        }
+      }
+    },
+    "error": {
+      "same_engine": "Primary and fallback must be different engines."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Fallback voice",
+        "data": {
+          "primary_engine": "Primary engine",
+          "primary_voice": "Primary voice",
+          "fallback_engine": "Fallback engine",
+          "fallback_voice": "Fallback voice",
+          "language": "Language",
+          "timeout": "Primary timeout (time to first audio)"
+        },
+        "data_description": {
+          "primary_voice": "Empty = engine default, e.g. it-IT-IsabellaNeural",
+          "fallback_voice": "Empty = engine default, e.g. it_IT-serena-medium",
+          "language": "Language this voice speaks, e.g. it-IT"
+        }
+      }
+    },
+    "error": {
+      "same_engine": "Primary and fallback must be different engines."
+    }
+  }
+}

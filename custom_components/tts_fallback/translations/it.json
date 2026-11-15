@@ -1,0 +1,48 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Voce con fallback",
+        "data": {
+          "primary_engine": "Motore primario",
+          "primary_voice": "Voce primaria",
+          "fallback_engine": "Motore di fallback",
+          "fallback_voice": "Voce di fallback",
+          "language": "Lingua",
+          "timeout": "Timeout primario (tempo al primo audio)"
+        },
+        "data_description": {
+          "primary_voice": "Vuoto = voce predefinita del motore, es. it-IT-IsabellaNeural",
+          "fallback_voice": "Vuoto = voce predefinita del motore, es. it_IT-serena-medium",
+          "language": "Lingua di questa voce, es. it-IT"
+        }
+      }
+    },
+    "error": {
+      "same_engine": "Motore primario e di fallback devono essere diversi."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Voce con fallback",
+        "data": {
+          "primary_engine": "Motore primario",
+          "primary_voice": "Voce primaria",
+          "fallback_engine": "Motore di fallback",
+          "fallback_voice": "Voce di fallback",
+          "language": "Lingua",
+          "timeout": "Timeout primario (tempo al primo audio)"
+        },
+        "data_description": {
+          "primary_voice": "Vuoto = voce predefinita del motore, es. it-IT-IsabellaNeural",
+          "fallback_voice": "Vuoto = voce predefinita del motore, es. it_IT-serena-medium",
+          "language": "Lingua di questa voce, es. it-IT"
+        }
+      }
+    },
+    "error": {
+      "same_engine": "Motore primario e di fallback devono essere diversi."
+    }
+  }
+}

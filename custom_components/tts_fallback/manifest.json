@@ -1,0 +1,11 @@
+{
+  "domain": "tts_fallback",
+  "name": "TTS Fallback",
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": ["tts"],
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "requirements": [],
+  "version": "0.1.0"
+}
