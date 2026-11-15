@@ -1,11 +1,17 @@
 {
   "domain": "tts_fallback",
   "name": "TTS Fallback",
-  "codeowners": [],
+  "codeowners": [
+    "@VoidElle"
+  ],
   "config_flow": true,
-  "dependencies": ["tts"],
+  "dependencies": [
+    "tts"
+  ],
+  "documentation": "https://github.com/VoidElle/ha-tts-fallback",
   "integration_type": "service",
   "iot_class": "calculated",
+  "issue_tracker": "https://github.com/VoidElle/ha-tts-fallback/issues",
   "requirements": [],
   "version": "0.1.0"
 }
