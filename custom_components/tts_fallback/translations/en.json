@@ -12,7 +12,7 @@
           "fallback_timeout": "Fallback timeout"
         },
         "data_description": {
-          "name": "Name of the entity, e.g. Voce con fallback",
+          "name": "Name of the entity, e.g. TTS Fallback",
           "language": "Language this voice speaks, e.g. it-IT",
           "timeout": "Longest wait for the primary's first audio",
           "fallback_timeout": "Longest wait for the fallback's first audio"

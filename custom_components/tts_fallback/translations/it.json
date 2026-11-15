@@ -12,7 +12,7 @@
           "fallback_timeout": "Timeout di fallback"
         },
         "data_description": {
-          "name": "Nome dell'entità, es. Voce con fallback",
+          "name": "Nome dell'entità, es. TTS Fallback",
           "language": "Lingua di questa voce, es. it-IT",
           "timeout": "Attesa massima del primo audio dal motore primario",
           "fallback_timeout": "Attesa massima del primo audio dal motore di fallback"

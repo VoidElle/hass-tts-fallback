@@ -12,7 +12,7 @@ The form has two steps. Step 2 is built from the engines picked in step 1, so it
 
 | Field | Required | Default | Description |
 |-------|----------|---------|-------------|
-| Name | ✅ | `Voce con fallback` | Name of the entry and of the entity. The default gives `tts.voce_con_fallback` |
+| Name | ✅ | `TTS Fallback` | Name of the entry and of the entity. The default gives `tts.tts_fallback` |
 | Primary engine | ✅ | `tts.edge_tts` | TTS entity tried first for every message |
 | Fallback engine | ✅ | `tts.piper` | TTS entity used when the primary fails. Must differ from the primary |
 | Language | ✅ | `it-IT` | Language this entity speaks. See [Language](#language) |

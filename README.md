@@ -12,7 +12,7 @@
 
 Home Assistant has no built-in way to fall back from one TTS engine to another. If a cloud voice stops answering, or the internet is down, an Assist satellite stays silent.
 
-TTS Fallback adds one TTS entity, **Voce con fallback** (`tts.voce_con_fallback`). It renders each message with a **primary** engine. If that engine fails or is too slow, it renders the same message with a **fallback** engine. The entity can be used anywhere a TTS engine is accepted: an Assist pipeline, `tts.speak`, or a media player.
+TTS Fallback adds one TTS entity (`tts.tts_fallback` by default). It renders each message with a **primary** engine. If that engine fails or is too slow, it renders the same message with a **fallback** engine. The entity can be used anywhere a TTS engine is accepted: an Assist pipeline, `tts.speak`, or a media player.
 
 Typical setup: [Microsoft Edge TTS](https://github.com/hasscc/hass-edge-tts) (`it-IT-IsabellaNeural`) as primary, a local [Piper](https://github.com/rhasspy/piper) voice (`it_IT-serena-medium`) as fallback.
 
@@ -49,7 +49,7 @@ Typical setup: [Microsoft Edge TTS](https://github.com/hasscc/hass-edge-tts) (`i
 
 | Field | Default | Description |
 |---|---|---|
-| Name | `Voce con fallback` | Name of the entity (gives `tts.voce_con_fallback`) |
+| Name | `TTS Fallback` | Name of the entity (gives `tts.tts_fallback`) |
 | Primary engine | `tts.edge_tts` | TTS entity tried first |
 | Fallback engine | `tts.piper` | TTS entity used when the primary fails |
 | Language | `it-IT` | Language this entity speaks |
@@ -71,7 +71,7 @@ Full field reference: [Configuration](docs/configuration.md).
 
 ## Use it in Assist 🎤
 1. Go to **Settings -> Voice assistants** and open your pipeline
-2. Under **Text-to-speech**, pick **Voce con fallback** and the language
+2. Under **Text-to-speech**, pick **TTS Fallback** and the language
 3. Save
 
 Testing the failover and reading pipeline timings: [Assist pipeline](docs/assist-pipeline.md).

@@ -14,7 +14,7 @@ CONF_TIMEOUT = "timeout"
 CONF_FALLBACK_TIMEOUT = "fallback_timeout"
 
 DEFAULTS = {
-    CONF_NAME: "Voce con fallback",
+    CONF_NAME: "TTS Fallback",
     CONF_PRIMARY_ENGINE: "tts.edge_tts",
     CONF_PRIMARY_VOICE: "it-IT-IsabellaNeural",
     CONF_FALLBACK_ENGINE: "tts.piper",

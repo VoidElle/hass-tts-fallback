@@ -3,7 +3,7 @@
 ## Set the entity as the pipeline's voice
 
 1. **Settings → Voice assistants**, open the pipeline
-2. **Text-to-speech**: pick **Voce con fallback**
+2. **Text-to-speech**: pick **TTS Fallback**
 3. **Language**: pick Italian (`it-IT`)
 4. Save
 
@@ -16,10 +16,10 @@ From **Developer Tools → Actions**:
 ```yaml
 action: tts.speak
 target:
-  entity_id: tts.voce_con_fallback
+  entity_id: tts.tts_fallback
 data:
   media_player_entity_id: media_player.<your_player>
-  message: Prova della voce con fallback.
+  message: Testing the TTS Fallback entity.
 ```
 
 The primary voice should answer, and no `TTS engine ... failed` warning should appear in the log.
@@ -40,7 +40,7 @@ After the test, restore the setting with **Configure** and call `tts.clear_cache
 
 ## Read the timings
 
-**Settings → Voice assistants**, open the pipeline, then **⋮ → Debug**. Each run lists its stages. The **Text-to-speech** stage shows the engine (`tts.voce_con_fallback`) and how long it took.
+**Settings → Voice assistants**, open the pipeline, then **⋮ → Debug**. Each run lists its stages. The **Text-to-speech** stage shows the engine (`tts.tts_fallback`) and how long it took.
 
 | What you see | Meaning |
 |--------------|---------|

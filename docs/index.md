@@ -29,7 +29,7 @@ Manual: copy `custom_components/tts_fallback/` into your Home Assistant `custom_
 1. **Settings → Devices & Services → + Add Integration**
 2. Search **TTS Fallback**
 3. Step 1: name, primary and fallback engines, language, timeouts. Step 2: voices and extra engine options
-4. Use `tts.voce_con_fallback` as the TTS engine of your Assist pipeline
+4. Use `tts.tts_fallback` as the TTS engine of your Assist pipeline
 
 ---
 
