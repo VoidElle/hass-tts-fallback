@@ -13,13 +13,12 @@ CONF_LANGUAGE = "language"
 CONF_TIMEOUT = "timeout"
 CONF_FALLBACK_TIMEOUT = "fallback_timeout"
 
+# Voices default to empty (each engine's own default voice); the language
+# default comes from Home Assistant's settings, see helpers.default_language.
 DEFAULTS = {
     CONF_NAME: "TTS Fallback",
     CONF_PRIMARY_ENGINE: "tts.edge_tts",
-    CONF_PRIMARY_VOICE: "it-IT-IsabellaNeural",
     CONF_FALLBACK_ENGINE: "tts.piper",
-    CONF_FALLBACK_VOICE: "it_IT-serena-medium",
-    CONF_LANGUAGE: "it-IT",
     CONF_TIMEOUT: 3,
     CONF_FALLBACK_TIMEOUT: 30,
 }

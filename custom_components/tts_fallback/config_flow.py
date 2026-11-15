@@ -48,7 +48,7 @@ from .const import (
     DEFAULTS,
     DOMAIN,
 )
-from .helpers import find_loop, pick_language
+from .helpers import default_language, find_loop, pick_language
 
 # (engine key, voice key, extra options key) per position in the chain
 _ENGINES = (
@@ -191,7 +191,14 @@ class TTSFallbackConfigFlow(ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=self.add_suggested_values_to_schema(
-                _engines_schema([], with_name=True), user_input or DEFAULTS
+                _engines_schema([], with_name=True),
+                user_input
+                or DEFAULTS
+                | {
+                    CONF_LANGUAGE: default_language(
+                        self.hass.config.language, self.hass.config.country
+                    )
+                },
             ),
             errors=errors,
         )
@@ -210,7 +217,7 @@ class TTSFallbackConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="voices",
             data_schema=self.add_suggested_values_to_schema(
                 _voices_schema(self.hass, self._data),
-                user_input or _suggested_voices(self._data, DEFAULTS),
+                user_input or {},
             ),
             description_placeholders=_voices_placeholders(self.hass, self._data),
             errors=errors,

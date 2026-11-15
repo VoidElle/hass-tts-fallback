@@ -4,7 +4,7 @@
 
 1. **Settings → Voice assistants**, open the pipeline
 2. **Text-to-speech**: pick **TTS Fallback**
-3. **Language**: pick Italian (`it-IT`)
+3. **Language**: pick the same language as the entity (for example `en-US` or `it-IT`)
 4. Save
 
 Every satellite that uses the pipeline (for example an ESPHome Echo Dot) now speaks through the entity. No change on the satellites is needed.

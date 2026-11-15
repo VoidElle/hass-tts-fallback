@@ -24,4 +24,10 @@ assert pick("it-IT", ["it"]) == "it"
 assert pick("it-IT", ["en-US"]) is None  # engine default
 assert pick("it-IT", []) is None
 assert variants("it-IT") == ["it", "it-IT", "it_IT"]
+
+default = helpers.default_language
+assert default("it", "IT") == "it-IT"
+assert default("en", "us") == "en-US"
+assert default("en-GB", "IT") == "en-GB"  # already regional
+assert default("de", None) == "de"
 print("ok")

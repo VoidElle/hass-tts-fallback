@@ -15,7 +15,7 @@ The form has two steps. Step 2 is built from the engines picked in step 1, so it
 | Name | ✅ | `TTS Fallback` | Name of the entry and of the entity. The default gives `tts.tts_fallback` |
 | Primary engine | ✅ | `tts.edge_tts` | TTS entity tried first for every message |
 | Fallback engine | ✅ | `tts.piper` | TTS entity used when the primary fails. Must differ from the primary |
-| Language | ✅ | `it-IT` | Language this entity speaks. See [Language](#language) |
+| Language | ✅ | Home Assistant's language | Language this entity speaks. Prefilled from Home Assistant's language and country (`it` in Italy gives `it-IT`). See [Language](#language) |
 | Primary timeout | ✅ | `3` s | Longest wait for the primary's **first** audio, 0.5–30 s in steps of 0.5 |
 | Fallback timeout | ✅ | `30` s | Longest wait for the fallback's first audio, 1–120 s in steps of 0.5 |
 
@@ -25,9 +25,9 @@ The step shows an error if the primary and fallback engines are the same entity.
 
 | Field | Required | Default | Description |
 |-------|----------|---------|-------------|
-| Primary voice | | `it-IT-IsabellaNeural` | Voice passed to the primary as the `voice` option. Empty = the engine's default voice. See [Voices](#voices) |
+| Primary voice | | empty | Voice passed to the primary as the `voice` option. Empty = the engine's default voice. See [Voices](#voices) |
 | Primary extra options | | | Any other option the primary accepts. See [Extra options](#extra-options) |
-| Fallback voice | | `it_IT-serena-medium` | Voice passed to the fallback. Empty = the engine's default voice |
+| Fallback voice | | empty | Voice passed to the fallback. Empty = the engine's default voice |
 | Fallback extra options | | | Any other option the fallback accepts |
 
 The step's description lists the options each engine accepts.

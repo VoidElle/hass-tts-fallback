@@ -41,6 +41,16 @@ def find_loop(graph: dict[str, list[str]], start: str) -> list[str] | None:
     return None
 
 
+def default_language(language: str, country: str | None) -> str:
+    """Home Assistant's language, with its country added when it has none.
+
+    "it" in Italy gives "it-IT", the form voice pipelines and most engines use.
+    """
+    if "-" in language or "_" in language or not country:
+        return language
+    return f"{language}-{country.upper()}"
+
+
 def language_variants(language: str) -> list[str]:
     """Spellings of a language this entity accepts from callers."""
     return sorted({language, language.replace("-", "_"), language.split("-")[0]})

@@ -14,7 +14,7 @@ Home Assistant has no built-in way to fall back from one TTS engine to another. 
 
 TTS Fallback adds one TTS entity (`tts.tts_fallback` by default). It renders each message with a **primary** engine. If that engine fails or is too slow, it renders the same message with a **fallback** engine. The entity can be used anywhere a TTS engine is accepted: an Assist pipeline, `tts.speak`, or a media player.
 
-Typical setup: [Microsoft Edge TTS](https://github.com/hasscc/hass-edge-tts) (`it-IT-IsabellaNeural`) as primary, a local [Piper](https://github.com/rhasspy/piper) voice (`it_IT-serena-medium`) as fallback.
+Typical setup: [Microsoft Edge TTS](https://github.com/hasscc/hass-edge-tts) (e.g. `en-US-AriaNeural`) as primary, a local [Piper](https://github.com/rhasspy/piper) voice (e.g. `en_US-lessac-medium`) as fallback.
 
 ## Features ✨
 - 🔁 **Automatic fallback**: on an error, on empty audio, or when the primary produces no audio within the timeout
@@ -52,7 +52,7 @@ Typical setup: [Microsoft Edge TTS](https://github.com/hasscc/hass-edge-tts) (`i
 | Name | `TTS Fallback` | Name of the entity (gives `tts.tts_fallback`) |
 | Primary engine | `tts.edge_tts` | TTS entity tried first |
 | Fallback engine | `tts.piper` | TTS entity used when the primary fails |
-| Language | `it-IT` | Language this entity speaks |
+| Language | Home Assistant's language | Language this entity speaks, e.g. `en-US` or `it-IT`. Prefilled from **Settings → System → General** (language + country) |
 | Primary timeout | `3` s | Longest wait for the primary's first audio (0.5–30 s) |
 | Fallback timeout | `30` s | Longest wait for the fallback's first audio (1–120 s) |
 
@@ -60,9 +60,9 @@ Typical setup: [Microsoft Edge TTS](https://github.com/hasscc/hass-edge-tts) (`i
 
 | Field | Default | Description |
 |---|---|---|
-| Primary voice | `it-IT-IsabellaNeural` | Dropdown of the engine's voices when it lists them, or any typed name. Empty = engine default |
+| Primary voice | empty | Dropdown of the engine's voices when it lists them, or any typed name. Empty = engine default |
 | Primary extra options | | Other options for the primary, as YAML (e.g. Edge `rate`, `pitch`, `volume`) |
-| Fallback voice | `it_IT-serena-medium` | As above, for the fallback |
+| Fallback voice | empty | As above, for the fallback |
 | Fallback extra options | | Other options for the fallback (e.g. Piper `speaker`) |
 
 The form lists the options each engine accepts and rejects the others. Everything except the name can be changed later with **Configure** on the integration entry; saving reloads the entry.
