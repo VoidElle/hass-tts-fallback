@@ -34,7 +34,7 @@ The step's description lists the options each engine accepts.
 
 ## Changing settings after setup
 
-Open the entry and select **Configure**. It shows the same two steps, filled with the current values, without the name. The integration's own entity is not offered as an engine, which would make it call itself. If you pick a different engine in step 1, its voice and extra options start empty in step 2, because they belong to the old engine. Saving reloads the entry, so the change applies to the next message.
+Open the entry and select **Configure**. It shows the same two steps, filled with the current values, without the name. The integration's own entity is not offered as an engine, and engines that would close a loop with other TTS Fallback entities are refused (see [How it works → Loops](how-it-works.md#loops)). If you pick a different engine in step 1, its voice and extra options start empty in step 2, because they belong to the old engine. Saving reloads the entry, so the change applies to the next message.
 
 | Setting | Where |
 |---------|-------|

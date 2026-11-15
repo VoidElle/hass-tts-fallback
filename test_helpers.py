@@ -8,7 +8,14 @@ spec = importlib.util.spec_from_file_location(
 )
 helpers = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(helpers)
-pick, variants = helpers.pick_language, helpers.language_variants
+pick, variants, loop = helpers.pick_language, helpers.language_variants, helpers.find_loop
+
+g = {"tts.a": ["tts.edge", "tts.b"], "tts.b": ["tts.piper", "tts.a"]}
+assert loop(g, "tts.a") == ["tts.a", "tts.b", "tts.a"]
+assert loop({"tts.a": ["tts.edge", "tts.b"], "tts.b": ["tts.piper", "tts.c"]}, "tts.a") is None
+assert loop({"tts.a": ["tts.b", "tts.c"], "tts.b": ["tts.c"], "tts.c": ["tts.b", "tts.a"]}, "tts.a") is not None
+assert loop({"tts.a": ["tts.b"], "tts.b": ["tts.c"], "tts.c": ["tts.b"]}, "tts.a") is None  # loop not through a
+assert loop({"tts.a": ["tts.a"]}, "tts.a") == ["tts.a", "tts.a"]
 
 assert pick("it-IT", ["en-US", "it-IT"]) == "it-IT"
 assert pick("it-IT", ["en_US", "it_IT"]) == "it_IT"  # Wyoming/Piper spelling

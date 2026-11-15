@@ -22,6 +22,25 @@ def pick_language(requested: str, supported: list[str]) -> str | None:
     return next((lang for lang in supported if _norm(lang).split("-")[0] == base), None)
 
 
+def find_loop(graph: dict[str, list[str]], start: str) -> list[str] | None:
+    """Return a chain of engines leading from start back to start, if any.
+
+    graph maps each TTS Fallback entity to the engines it calls; engines not in
+    the graph are plain engines and end the chain.
+    """
+    stack = [(start, [start])]
+    seen = set()
+    while stack:
+        node, path = stack.pop()
+        for engine in graph.get(node, []):
+            if engine == start:
+                return [*path, engine]
+            if engine not in seen:
+                seen.add(engine)
+                stack.append((engine, [*path, engine]))
+    return None
+
+
 def language_variants(language: str) -> list[str]:
     """Spellings of a language this entity accepts from callers."""
     return sorted({language, language.replace("-", "_"), language.split("-")[0]})

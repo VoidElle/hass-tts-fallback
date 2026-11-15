@@ -48,7 +48,7 @@ from .const import (
     DEFAULTS,
     DOMAIN,
 )
-from .helpers import pick_language
+from .helpers import find_loop, pick_language
 
 # (engine key, voice key, extra options key) per position in the chain
 _ENGINES = (
@@ -86,6 +86,27 @@ def _validate_engines(user_input: dict[str, Any]) -> dict[str, str]:
     if user_input[CONF_PRIMARY_ENGINE] == user_input[CONF_FALLBACK_ENGINE]:
         return {"base": "same_engine"}
     return {}
+
+
+def _find_loop(
+    hass: HomeAssistant, own_entry_id: str, user_input: dict[str, Any]
+) -> list[str] | None:
+    """Loop this entry would close among TTS Fallback entities, with user_input applied."""
+    registry = er.async_get(hass)
+    graph: dict[str, list[str]] = {}
+    own = None
+    for entry in hass.config_entries.async_entries(DOMAIN):
+        if (entity_id := registry.async_get_entity_id("tts", DOMAIN, entry.entry_id)) is None:
+            continue
+        options = user_input if entry.entry_id == own_entry_id else entry.options
+        graph[entity_id] = [
+            engine
+            for key in (CONF_PRIMARY_ENGINE, CONF_FALLBACK_ENGINE)
+            if (engine := options.get(key))
+        ]
+        if entry.entry_id == own_entry_id:
+            own = entity_id
+    return find_loop(graph, own) if own else None
 
 
 def _voice_selector(hass: HomeAssistant, engine: str, language: str) -> SelectSelector:
@@ -214,8 +235,15 @@ class TTSFallbackOptionsFlow(OptionsFlowWithReload):
     ) -> ConfigFlowResult:
         """Edit engines, language and timeouts."""
         errors: dict[str, str] = {}
+        placeholders = {"loop": ""}
         if user_input is not None:
-            if not (errors := _validate_engines(user_input)):
+            errors = _validate_engines(user_input)
+            if not errors and (
+                loop := _find_loop(self.hass, self.config_entry.entry_id, user_input)
+            ):
+                errors = {"base": "loop"}
+                placeholders["loop"] = " → ".join(loop)
+            if not errors:
                 self._data = user_input
                 return await self.async_step_voices()
         own = er.async_get(self.hass).async_get_entity_id(
@@ -227,6 +255,7 @@ class TTSFallbackOptionsFlow(OptionsFlowWithReload):
                 _engines_schema([own] if own else [], with_name=False),
                 user_input or (DEFAULTS | dict(self.config_entry.options)),
             ),
+            description_placeholders=placeholders,
             errors=errors,
         )
 

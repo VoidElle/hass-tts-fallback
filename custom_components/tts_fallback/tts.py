@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from contextvars import ContextVar
 import logging
 from typing import Any
 
@@ -29,6 +30,11 @@ from .const import (
 from .helpers import language_variants, pick_language
 
 _LOGGER = logging.getLogger(__name__)
+
+# TTS Fallback entities rendering the current message. HA renders inner engines
+# in tasks created from our call, and tasks copy the context, so a nested call
+# sees the entities above it. Catches loops the config flow could not see.
+_ACTIVE: ContextVar[frozenset[str]] = ContextVar("tts_fallback_active", default=frozenset())
 
 
 async def async_setup_entry(
@@ -68,15 +74,22 @@ class FallbackTTSEntity(TextToSpeechEntity):
         self, message: str, language: str, options: dict[str, Any]
     ) -> TtsAudioType:
         """Try each engine in order and return the first audio produced."""
-        failures: list[str] = []
-        for engine, engine_options, timeout in self._chain:
-            try:
-                return await self._generate(engine, engine_options, message, language, timeout)
-            except Exception as err:  # noqa: BLE001 - any engine failure means fall back
-                reason = f"timeout after {timeout}s" if isinstance(err, TimeoutError) else repr(err)
-                _LOGGER.warning("TTS engine %s failed (%s)", engine, reason)
-                failures.append(f"{engine}: {reason}")
-        raise HomeAssistantError(f"All TTS engines failed: {'; '.join(failures)}")
+        active = _ACTIVE.get()
+        if self.entity_id in active:
+            raise HomeAssistantError(f"loop: {self.entity_id} is already rendering this message")
+        token = _ACTIVE.set(active | {self.entity_id})
+        try:
+            failures: list[str] = []
+            for engine, engine_options, timeout in self._chain:
+                try:
+                    return await self._generate(engine, engine_options, message, language, timeout)
+                except Exception as err:  # noqa: BLE001 - any engine failure means fall back
+                    reason = f"timeout after {timeout}s" if isinstance(err, TimeoutError) else repr(err)
+                    _LOGGER.warning("TTS engine %s failed (%s)", engine, reason)
+                    failures.append(f"{engine}: {reason}")
+            raise HomeAssistantError(f"All TTS engines failed: {'; '.join(failures)}")
+        finally:
+            _ACTIVE.reset(token)
 
     async def _generate(
         self,
@@ -87,8 +100,8 @@ class FallbackTTSEntity(TextToSpeechEntity):
         timeout: float,
     ) -> tuple[str, bytes]:
         """Render the message with one engine, bounded by time to first audio."""
-        if engine == self.entity_id:
-            raise HomeAssistantError("engine points to this entity")
+        if engine in _ACTIVE.get():
+            raise HomeAssistantError(f"loop: {engine} is already rendering this message")
         if (instance := get_engine_instance(self.hass, engine)) is None:
             raise HomeAssistantError("engine not found")
         stream = self.hass.data[DATA_TTS_MANAGER].async_create_result_stream(

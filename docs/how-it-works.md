@@ -19,11 +19,20 @@ For each message the entity tries position 1, then position 2, and returns the f
 | The engine raises an error (no internet, bad voice, service down) | the error, e.g. `ClientConnectorError(...)` |
 | The engine returns no audio at all | `StopAsyncIteration()` or `HomeAssistantError('empty audio')` |
 | The engine entity does not exist or is not loaded | `HomeAssistantError('engine not found')` |
-| The engine is this entity itself | `HomeAssistantError('engine points to this entity')` |
+| The engine is a TTS Fallback entity already rendering this message (a loop) | `HomeAssistantError('loop: tts.<entity> is already rendering this message')` |
 
 An error after the first audio, while the rest is still arriving, also counts as a failure: the message is rendered again by the fallback, so no truncated audio is played.
 
 If both engines fail, the call raises `All TTS engines failed: <primary>: <reason>; <fallback>: <reason>`. In an Assist pipeline this shows as a TTS error in the pipeline debug view.
+
+## Loops
+
+A TTS Fallback entity can use another TTS Fallback entity as an engine, to build a longer chain. A chain that leads back to an entity already in it (A → B → A, or A → A) would never end, so it is stopped in two places:
+
+1. **Configure** refuses to save engines that close a loop. The error names the chain, for example `tts.voce_b → tts.voce_a → tts.voce_b`. The entity itself is also not offered as an engine.
+2. **At runtime**, each entity remembers which TTS Fallback entities are already rendering the current message. An engine that is one of them counts as failed (see the table above), and the chain moves on to the next engine. This also covers loops the form cannot see, such as an entity ID renamed after setup.
+
+At first setup no loop is possible, because no other entity can point to an entity that does not exist yet.
 
 ## Rendering a message with an engine
 

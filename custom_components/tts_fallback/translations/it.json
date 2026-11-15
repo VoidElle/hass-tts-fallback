@@ -66,7 +66,8 @@
     "error": {
       "same_engine": "Motore primario e di fallback devono essere diversi.",
       "not_a_mapping": "Le opzioni extra devono essere una mappa (chiave: valore).",
-      "unsupported_options": "Il motore non accetta una di queste opzioni."
+      "unsupported_options": "Il motore non accetta una di queste opzioni.",
+      "loop": "Così si creerebbe un giro chiuso tra voci con fallback: {loop}."
     }
   }
 }

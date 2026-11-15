@@ -88,7 +88,7 @@ Details: [How it works](docs/how-it-works.md).
 - **No streaming input.** The entity waits for the full text before speaking. With an LLM conversation agent, a pipeline that used a streaming engine (such as Piper over Wyoming) starts speaking long answers later.
 - **Cached fallback audio.** Home Assistant caches this entity's output per message. A message once rendered by the fallback keeps the fallback voice until the TTS cache is cleared.
 - **No per-call options.** A call to the entity cannot pass options such as `voice`; it uses the voices and options set in the entry. Only Home Assistant's preferred-format options (`preferred_format`, sample rate, and so on) pass through.
-- **Two engines.** The chain is one primary and one fallback. For a third voice, chain a second TTS Fallback entity as the fallback of the first. Do not make a loop (A falls back to B, B falls back to A).
+- **Two engines.** The chain is one primary and one fallback. For a third voice, chain a second TTS Fallback entity as the fallback of the first. Loops (A falls back to B, B falls back to A) are refused by **Configure** and stopped at runtime: see [How it works](docs/how-it-works.md#loops).
 - **Edge TTS is unofficial.** It relies on a Microsoft service that is not a public API and can stop working, which is the reason this integration exists.
 
 ## Documentation 📖

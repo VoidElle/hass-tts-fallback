@@ -66,7 +66,8 @@
     "error": {
       "same_engine": "Primary and fallback must be different engines.",
       "not_a_mapping": "Extra options must be a mapping (key: value).",
-      "unsupported_options": "The engine does not accept one of these options."
+      "unsupported_options": "The engine does not accept one of these options.",
+      "loop": "This would create a loop between fallback voices: {loop}."
     }
   }
 }
