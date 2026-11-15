@@ -2,10 +2,10 @@
   <h1>🗣️ TTS Fallback</h1>
   <p><em>Home Assistant text-to-speech entity that switches to a backup engine when the main one fails</em></p>
   <br>
-  <a href="https://github.com/VoidElle/ha-tts-fallback/releases"><img src="https://img.shields.io/github/v/release/VoidElle/ha-tts-fallback?style=flat-square&label=version" alt="version"></a>
-  <a href="https://github.com/VoidElle/ha-tts-fallback/commits"><img src="https://img.shields.io/github/last-commit/VoidElle/ha-tts-fallback?style=flat-square" alt="last commit"></a>
+  <a href="https://github.com/VoidElle/hass-tts-fallback/releases"><img src="https://img.shields.io/github/v/release/VoidElle/hass-tts-fallback?style=flat-square&label=version" alt="version"></a>
+  <a href="https://github.com/VoidElle/hass-tts-fallback/commits"><img src="https://img.shields.io/github/last-commit/VoidElle/hass-tts-fallback?style=flat-square" alt="last commit"></a>
   <br>
-  <a href="https://my.home-assistant.io/redirect/marketplace_repository/?owner=VoidElle&repository=ha-tts-fallback&category=integration"><img src="https://img.shields.io/badge/Marketplace-custom%20repository-41BDF5?style=flat-square&logo=home-assistant" alt="Marketplace"></a>
+  <a href="https://my.home-assistant.io/redirect/marketplace_repository/?owner=VoidElle&repository=hass-tts-fallback&category=integration"><img src="https://img.shields.io/badge/Marketplace-custom%20repository-41BDF5?style=flat-square&logo=home-assistant" alt="Marketplace"></a>
   <a href="https://www.home-assistant.io/"><img src="https://img.shields.io/badge/Home%20Assistant-%E2%89%A52026.11-41BDF5?style=flat-square&logo=home-assistant" alt="Home Assistant"></a>
 </div>
 
@@ -30,7 +30,7 @@ Typical setup: [Microsoft Edge TTS](https://github.com/hasscc/hass-edge-tts) (`i
 ## Installation 📦
 ### Via the Marketplace (custom repository) ⭐
 1. Go to **Settings** > **Marketplace** (admin users only)
-2. Add `https://github.com/VoidElle/ha-tts-fallback` as a custom repository of type **Integration**
+2. Add `https://github.com/VoidElle/hass-tts-fallback` as a custom repository of type **Integration**
 3. Search for "TTS Fallback", select **Install**
 4. Restart Home Assistant 🔄
 
@@ -137,9 +137,9 @@ Log levels can also be changed at runtime with the `logger.set_level` action.
 
 ## Contributing 🤝
 Contributions are welcome.
-- 🐛 **Report bugs** via [GitHub Issues](https://github.com/VoidElle/ha-tts-fallback/issues)
+- 🐛 **Report bugs** via [GitHub Issues](https://github.com/VoidElle/hass-tts-fallback/issues)
 - 🌍 **Translate** to more languages (`custom_components/tts_fallback/translations/`)
-- 🔧 **Submit PRs** via [GitHub Pull requests](https://github.com/VoidElle/ha-tts-fallback/pulls)
+- 🔧 **Submit PRs** via [GitHub Pull requests](https://github.com/VoidElle/hass-tts-fallback/pulls)
 
 ### Development
 1. Fork and clone the repository

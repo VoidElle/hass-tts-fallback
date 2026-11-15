@@ -8,10 +8,10 @@
   "dependencies": [
     "tts"
   ],
-  "documentation": "https://github.com/VoidElle/ha-tts-fallback",
+  "documentation": "https://github.com/VoidElle/hass-tts-fallback",
   "integration_type": "service",
   "iot_class": "calculated",
-  "issue_tracker": "https://github.com/VoidElle/ha-tts-fallback/issues",
+  "issue_tracker": "https://github.com/VoidElle/hass-tts-fallback/issues",
   "requirements": [],
   "version": "0.1.0"
 }

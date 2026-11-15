@@ -21,7 +21,7 @@ Home Assistant integration that adds one TTS entity. It renders speech with a **
 - Two TTS engines set up as entities, for example `tts.edge_tts` (cloud) and `tts.piper` (local)
 
 ### Installation
-Via the Marketplace: add `https://github.com/VoidElle/ha-tts-fallback` as a custom repository of type **Integration**, install **TTS Fallback**, restart Home Assistant.
+Via the Marketplace: add `https://github.com/VoidElle/hass-tts-fallback` as a custom repository of type **Integration**, install **TTS Fallback**, restart Home Assistant.
 
 Manual: copy `custom_components/tts_fallback/` into your Home Assistant `custom_components/` directory, restart.
 
