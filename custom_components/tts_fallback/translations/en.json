@@ -2,47 +2,71 @@
   "config": {
     "step": {
       "user": {
-        "title": "Fallback voice",
+        "title": "Engines",
         "data": {
+          "name": "Name",
           "primary_engine": "Primary engine",
-          "primary_voice": "Primary voice",
           "fallback_engine": "Fallback engine",
-          "fallback_voice": "Fallback voice",
           "language": "Language",
-          "timeout": "Primary timeout (time to first audio)"
+          "timeout": "Primary timeout",
+          "fallback_timeout": "Fallback timeout"
         },
         "data_description": {
-          "primary_voice": "Empty = engine default, e.g. it-IT-IsabellaNeural",
-          "fallback_voice": "Empty = engine default, e.g. it_IT-serena-medium",
-          "language": "Language this voice speaks, e.g. it-IT"
+          "name": "Name of the entity, e.g. Voce con fallback",
+          "language": "Language this voice speaks, e.g. it-IT",
+          "timeout": "Longest wait for the primary's first audio",
+          "fallback_timeout": "Longest wait for the fallback's first audio"
+        }
+      },
+      "voices": {
+        "title": "Voices and engine options",
+        "description": "Pick a voice from the list or type its name. Empty = engine default.\n\nExtra options are passed to the engine as they are, as a YAML mapping (for example `rate: \"+10%\"`). The voice field wins over a `voice` key.\n\nPrimary engine accepts: {primary_options_supported}\nFallback engine accepts: {fallback_options_supported}",
+        "data": {
+          "primary_voice": "Primary voice",
+          "primary_options": "Primary extra options",
+          "fallback_voice": "Fallback voice",
+          "fallback_options": "Fallback extra options"
         }
       }
     },
     "error": {
-      "same_engine": "Primary and fallback must be different engines."
+      "same_engine": "Primary and fallback must be different engines.",
+      "not_a_mapping": "Extra options must be a mapping (key: value).",
+      "unsupported_options": "The engine does not accept one of these options."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Fallback voice",
+        "title": "Engines",
         "data": {
           "primary_engine": "Primary engine",
-          "primary_voice": "Primary voice",
           "fallback_engine": "Fallback engine",
-          "fallback_voice": "Fallback voice",
           "language": "Language",
-          "timeout": "Primary timeout (time to first audio)"
+          "timeout": "Primary timeout",
+          "fallback_timeout": "Fallback timeout"
         },
         "data_description": {
-          "primary_voice": "Empty = engine default, e.g. it-IT-IsabellaNeural",
-          "fallback_voice": "Empty = engine default, e.g. it_IT-serena-medium",
-          "language": "Language this voice speaks, e.g. it-IT"
+          "language": "Language this voice speaks, e.g. it-IT",
+          "timeout": "Longest wait for the primary's first audio",
+          "fallback_timeout": "Longest wait for the fallback's first audio"
+        }
+      },
+      "voices": {
+        "title": "Voices and engine options",
+        "description": "Pick a voice from the list or type its name. Empty = engine default.\n\nExtra options are passed to the engine as they are, as a YAML mapping (for example `rate: \"+10%\"`). The voice field wins over a `voice` key.\n\nPrimary engine accepts: {primary_options_supported}\nFallback engine accepts: {fallback_options_supported}",
+        "data": {
+          "primary_voice": "Primary voice",
+          "primary_options": "Primary extra options",
+          "fallback_voice": "Fallback voice",
+          "fallback_options": "Fallback extra options"
         }
       }
     },
     "error": {
-      "same_engine": "Primary and fallback must be different engines."
+      "same_engine": "Primary and fallback must be different engines.",
+      "not_a_mapping": "Extra options must be a mapping (key: value).",
+      "unsupported_options": "The engine does not accept one of these options."
     }
   }
 }

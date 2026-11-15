@@ -16,12 +16,15 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import (
     CONF_FALLBACK_ENGINE,
+    CONF_FALLBACK_OPTIONS,
+    CONF_FALLBACK_TIMEOUT,
     CONF_FALLBACK_VOICE,
     CONF_LANGUAGE,
     CONF_PRIMARY_ENGINE,
+    CONF_PRIMARY_OPTIONS,
     CONF_PRIMARY_VOICE,
     CONF_TIMEOUT,
-    FALLBACK_TIMEOUT,
+    DEFAULTS,
 )
 from .helpers import language_variants, pick_language
 
@@ -42,14 +45,23 @@ class FallbackTTSEntity(TextToSpeechEntity):
 
     def __init__(self, entry: ConfigEntry) -> None:
         """Initialize from the entry options."""
-        opts = entry.options
+        opts = DEFAULTS | dict(entry.options)
         self._attr_name = entry.title
         self._attr_unique_id = entry.entry_id
         self._attr_default_language = opts[CONF_LANGUAGE]
         self._attr_supported_languages = language_variants(opts[CONF_LANGUAGE])
+        # (engine, engine options, time to first audio); voice wins over extra options
         self._chain = [
-            (opts[CONF_PRIMARY_ENGINE], opts.get(CONF_PRIMARY_VOICE), float(opts[CONF_TIMEOUT])),
-            (opts[CONF_FALLBACK_ENGINE], opts.get(CONF_FALLBACK_VOICE), FALLBACK_TIMEOUT),
+            (
+                opts[engine],
+                dict(entry.options.get(extra) or {})
+                | ({ATTR_VOICE: entry.options[voice]} if entry.options.get(voice) else {}),
+                float(opts[timeout]),
+            )
+            for engine, voice, extra, timeout in (
+                (CONF_PRIMARY_ENGINE, CONF_PRIMARY_VOICE, CONF_PRIMARY_OPTIONS, CONF_TIMEOUT),
+                (CONF_FALLBACK_ENGINE, CONF_FALLBACK_VOICE, CONF_FALLBACK_OPTIONS, CONF_FALLBACK_TIMEOUT),
+            )
         ]
 
     async def async_get_tts_audio(
@@ -57,9 +69,9 @@ class FallbackTTSEntity(TextToSpeechEntity):
     ) -> TtsAudioType:
         """Try each engine in order and return the first audio produced."""
         failures: list[str] = []
-        for engine, voice, timeout in self._chain:
+        for engine, engine_options, timeout in self._chain:
             try:
-                return await self._generate(engine, voice, message, language, timeout)
+                return await self._generate(engine, engine_options, message, language, timeout)
             except Exception as err:  # noqa: BLE001 - any engine failure means fall back
                 reason = f"timeout after {timeout}s" if isinstance(err, TimeoutError) else repr(err)
                 _LOGGER.warning("TTS engine %s failed (%s)", engine, reason)
@@ -67,7 +79,12 @@ class FallbackTTSEntity(TextToSpeechEntity):
         raise HomeAssistantError(f"All TTS engines failed: {'; '.join(failures)}")
 
     async def _generate(
-        self, engine: str, voice: str | None, message: str, language: str, timeout: float
+        self,
+        engine: str,
+        engine_options: dict[str, Any],
+        message: str,
+        language: str,
+        timeout: float,
     ) -> tuple[str, bytes]:
         """Render the message with one engine, bounded by time to first audio."""
         if engine == self.entity_id:
@@ -79,7 +96,7 @@ class FallbackTTSEntity(TextToSpeechEntity):
             # This entity's own output is cached by HA; skip a second copy.
             use_file_cache=False,
             language=pick_language(language, instance.supported_languages or []),
-            options={ATTR_VOICE: voice} if voice else {},
+            options=engine_options,
         )
         stream.async_set_message(message)
         chunks = stream.async_stream_result()

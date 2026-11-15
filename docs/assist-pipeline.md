@@ -30,8 +30,8 @@ Simulate a broken primary, then restore it. Pick one:
 
 | Method | How | Expected warning |
 |--------|-----|------------------|
-| Wrong voice | **Configure** → Primary voice `it-IT-NonExistentNeural` | the Edge TTS error |
-| Timeout | **Configure** → Primary timeout `0.5` s | `timeout after 0.5s` (only if the primary is slower than that) |
+| Wrong voice | **Configure** → step 2 → Primary voice `it-IT-NonExistentNeural` | the Edge TTS error |
+| Timeout | **Configure** → step 1 → Primary timeout `0.5` s | `timeout after 0.5s` (only if the primary is slower than that) |
 | No internet | Block the Home Assistant host's internet access | a connection error |
 
 Use a **new sentence** for each test. A sentence already in the cache is played from it without calling any engine (see [How it works → Caching](how-it-works.md#caching)).

@@ -2,47 +2,71 @@
   "config": {
     "step": {
       "user": {
-        "title": "Voce con fallback",
+        "title": "Motori",
         "data": {
+          "name": "Nome",
           "primary_engine": "Motore primario",
-          "primary_voice": "Voce primaria",
           "fallback_engine": "Motore di fallback",
-          "fallback_voice": "Voce di fallback",
           "language": "Lingua",
-          "timeout": "Timeout primario (tempo al primo audio)"
+          "timeout": "Timeout primario",
+          "fallback_timeout": "Timeout di fallback"
         },
         "data_description": {
-          "primary_voice": "Vuoto = voce predefinita del motore, es. it-IT-IsabellaNeural",
-          "fallback_voice": "Vuoto = voce predefinita del motore, es. it_IT-serena-medium",
-          "language": "Lingua di questa voce, es. it-IT"
+          "name": "Nome dell'entità, es. Voce con fallback",
+          "language": "Lingua di questa voce, es. it-IT",
+          "timeout": "Attesa massima del primo audio dal motore primario",
+          "fallback_timeout": "Attesa massima del primo audio dal motore di fallback"
+        }
+      },
+      "voices": {
+        "title": "Voci e opzioni dei motori",
+        "description": "Scegli una voce dall'elenco o scrivine il nome. Vuoto = voce predefinita del motore.\n\nLe opzioni extra vengono passate al motore così come sono, come mappa YAML (per esempio `rate: \"+10%\"`). Il campo voce ha la precedenza su una chiave `voice`.\n\nIl motore primario accetta: {primary_options_supported}\nIl motore di fallback accetta: {fallback_options_supported}",
+        "data": {
+          "primary_voice": "Voce primaria",
+          "primary_options": "Opzioni extra primario",
+          "fallback_voice": "Voce di fallback",
+          "fallback_options": "Opzioni extra fallback"
         }
       }
     },
     "error": {
-      "same_engine": "Motore primario e di fallback devono essere diversi."
+      "same_engine": "Motore primario e di fallback devono essere diversi.",
+      "not_a_mapping": "Le opzioni extra devono essere una mappa (chiave: valore).",
+      "unsupported_options": "Il motore non accetta una di queste opzioni."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Voce con fallback",
+        "title": "Motori",
         "data": {
           "primary_engine": "Motore primario",
-          "primary_voice": "Voce primaria",
           "fallback_engine": "Motore di fallback",
-          "fallback_voice": "Voce di fallback",
           "language": "Lingua",
-          "timeout": "Timeout primario (tempo al primo audio)"
+          "timeout": "Timeout primario",
+          "fallback_timeout": "Timeout di fallback"
         },
         "data_description": {
-          "primary_voice": "Vuoto = voce predefinita del motore, es. it-IT-IsabellaNeural",
-          "fallback_voice": "Vuoto = voce predefinita del motore, es. it_IT-serena-medium",
-          "language": "Lingua di questa voce, es. it-IT"
+          "language": "Lingua di questa voce, es. it-IT",
+          "timeout": "Attesa massima del primo audio dal motore primario",
+          "fallback_timeout": "Attesa massima del primo audio dal motore di fallback"
+        }
+      },
+      "voices": {
+        "title": "Voci e opzioni dei motori",
+        "description": "Scegli una voce dall'elenco o scrivine il nome. Vuoto = voce predefinita del motore.\n\nLe opzioni extra vengono passate al motore così come sono, come mappa YAML (per esempio `rate: \"+10%\"`). Il campo voce ha la precedenza su una chiave `voice`.\n\nIl motore primario accetta: {primary_options_supported}\nIl motore di fallback accetta: {fallback_options_supported}",
+        "data": {
+          "primary_voice": "Voce primaria",
+          "primary_options": "Opzioni extra primario",
+          "fallback_voice": "Voce di fallback",
+          "fallback_options": "Opzioni extra fallback"
         }
       }
     },
     "error": {
-      "same_engine": "Motore primario e di fallback devono essere diversi."
+      "same_engine": "Motore primario e di fallback devono essere diversi.",
+      "not_a_mapping": "Le opzioni extra devono essere una mappa (chiave: valore).",
+      "unsupported_options": "Il motore non accetta una di queste opzioni."
     }
   }
 }

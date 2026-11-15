@@ -1,4 +1,9 @@
-"""Config and options flow for TTS Fallback."""
+"""Config and options flow for TTS Fallback.
+
+Two steps, the same in setup and in Configure:
+1. engines, language and timeouts
+2. voices and extra options, with the voice lists of the engines picked in step 1
+"""
 
 from __future__ import annotations
 
@@ -6,13 +11,14 @@ from typing import Any
 
 import voluptuous as vol
 
+from homeassistant.components.tts.helper import get_engine_instance
 from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
     ConfigFlowResult,
     OptionsFlowWithReload,
 )
-from homeassistant.core import callback
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.selector import (
     EntitySelector,
@@ -20,48 +26,127 @@ from homeassistant.helpers.selector import (
     NumberSelector,
     NumberSelectorConfig,
     NumberSelectorMode,
+    ObjectSelector,
+    SelectOptionDict,
+    SelectSelector,
+    SelectSelectorConfig,
+    SelectSelectorMode,
     TextSelector,
 )
 
 from .const import (
     CONF_FALLBACK_ENGINE,
+    CONF_FALLBACK_OPTIONS,
+    CONF_FALLBACK_TIMEOUT,
     CONF_FALLBACK_VOICE,
     CONF_LANGUAGE,
+    CONF_NAME,
     CONF_PRIMARY_ENGINE,
+    CONF_PRIMARY_OPTIONS,
     CONF_PRIMARY_VOICE,
     CONF_TIMEOUT,
-    DEFAULT_TITLE,
     DEFAULTS,
     DOMAIN,
 )
+from .helpers import pick_language
+
+# (engine key, voice key, extra options key) per position in the chain
+_ENGINES = (
+    (CONF_PRIMARY_ENGINE, CONF_PRIMARY_VOICE, CONF_PRIMARY_OPTIONS),
+    (CONF_FALLBACK_ENGINE, CONF_FALLBACK_VOICE, CONF_FALLBACK_OPTIONS),
+)
 
 
-def _schema(exclude: list[str]) -> vol.Schema:
-    engine = EntitySelector(EntitySelectorConfig(domain="tts", exclude_entities=exclude))
-    return vol.Schema(
-        {
-            vol.Required(CONF_PRIMARY_ENGINE): engine,
-            vol.Optional(CONF_PRIMARY_VOICE): TextSelector(),
-            vol.Required(CONF_FALLBACK_ENGINE): engine,
-            vol.Optional(CONF_FALLBACK_VOICE): TextSelector(),
-            vol.Required(CONF_LANGUAGE): TextSelector(),
-            vol.Required(CONF_TIMEOUT): NumberSelector(
-                NumberSelectorConfig(
-                    min=0.5,
-                    max=30,
-                    step=0.5,
-                    unit_of_measurement="s",
-                    mode=NumberSelectorMode.BOX,
-                )
-            ),
-        }
+def _seconds(minimum: float, maximum: float) -> NumberSelector:
+    return NumberSelector(
+        NumberSelectorConfig(
+            min=minimum,
+            max=maximum,
+            step=0.5,
+            unit_of_measurement="s",
+            mode=NumberSelectorMode.BOX,
+        )
     )
 
 
-def _validate(user_input: dict[str, Any]) -> dict[str, str]:
+def _engines_schema(exclude: list[str], with_name: bool) -> vol.Schema:
+    engine = EntitySelector(EntitySelectorConfig(domain="tts", exclude_entities=exclude))
+    fields: dict[Any, Any] = {vol.Required(CONF_NAME): TextSelector()} if with_name else {}
+    fields |= {
+        vol.Required(CONF_PRIMARY_ENGINE): engine,
+        vol.Required(CONF_FALLBACK_ENGINE): engine,
+        vol.Required(CONF_LANGUAGE): TextSelector(),
+        vol.Required(CONF_TIMEOUT): _seconds(0.5, 30),
+        vol.Required(CONF_FALLBACK_TIMEOUT): _seconds(1, 120),
+    }
+    return vol.Schema(fields)
+
+
+def _validate_engines(user_input: dict[str, Any]) -> dict[str, str]:
     if user_input[CONF_PRIMARY_ENGINE] == user_input[CONF_FALLBACK_ENGINE]:
         return {"base": "same_engine"}
     return {}
+
+
+def _voice_selector(hass: HomeAssistant, engine: str, language: str) -> SelectSelector:
+    """Dropdown of the engine's voices; any other name can still be typed."""
+    voices = []
+    instance = get_engine_instance(hass, engine)
+    if instance is not None and (lang := pick_language(language, instance.supported_languages or [])):
+        voices = instance.async_get_supported_voices(lang) or []
+    return SelectSelector(
+        SelectSelectorConfig(
+            options=[SelectOptionDict(value=v.voice_id, label=v.name) for v in voices],
+            custom_value=True,
+            sort=True,
+            mode=SelectSelectorMode.DROPDOWN,
+        )
+    )
+
+
+def _supported_options(hass: HomeAssistant, engine: str) -> list[str]:
+    instance = get_engine_instance(hass, engine)
+    return list(instance.supported_options or []) if instance else []
+
+
+def _voices_schema(hass: HomeAssistant, data: dict[str, Any]) -> vol.Schema:
+    fields: dict[Any, Any] = {}
+    for engine_key, voice_key, options_key in _ENGINES:
+        fields[vol.Optional(voice_key)] = _voice_selector(
+            hass, data[engine_key], data[CONF_LANGUAGE]
+        )
+        fields[vol.Optional(options_key)] = ObjectSelector()
+    return vol.Schema(fields)
+
+
+def _voices_placeholders(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, str]:
+    return {
+        f"{options_key}_supported": ", ".join(_supported_options(hass, data[engine_key])) or "-"
+        for engine_key, _, options_key in _ENGINES
+    }
+
+
+def _validate_voices(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, str]:
+    """Extra options must be a mapping of options the engine accepts."""
+    for engine_key, _, options_key in _ENGINES:
+        extra = data.get(options_key) or {}
+        if not isinstance(extra, dict):
+            return {options_key: "not_a_mapping"}
+        supported = _supported_options(hass, data[engine_key])
+        if get_engine_instance(hass, data[engine_key]) and set(extra) - set(supported):
+            return {options_key: "unsupported_options"}
+    return {}
+
+
+def _suggested_voices(engines: dict[str, Any], previous: dict[str, Any]) -> dict[str, Any]:
+    """Keep voice and options of an engine that did not change."""
+    suggested = {}
+    for engine_key, voice_key, options_key in _ENGINES:
+        if previous.get(engine_key) == engines[engine_key]:
+            for key in (voice_key, options_key):
+                if previous.get(key):
+                    suggested[key] = previous[key]
+    return suggested
 
 
 class TTSFallbackConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -69,21 +154,44 @@ class TTSFallbackConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    def __init__(self) -> None:
+        """Initialize."""
+        self._data: dict[str, Any] = {}
+
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Pick primary and fallback engines."""
+        """Pick engines, language and timeouts."""
         errors: dict[str, str] = {}
         if user_input is not None:
-            if not (errors := _validate(user_input)):
-                return self.async_create_entry(
-                    title=DEFAULT_TITLE, data={}, options=user_input
-                )
+            if not (errors := _validate_engines(user_input)):
+                self._data = user_input
+                return await self.async_step_voices()
         return self.async_show_form(
             step_id="user",
             data_schema=self.add_suggested_values_to_schema(
-                _schema([]), user_input or DEFAULTS
+                _engines_schema([], with_name=True), user_input or DEFAULTS
             ),
+            errors=errors,
+        )
+
+    async def async_step_voices(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Pick a voice and extra options per engine."""
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            if not (errors := _validate_voices(self.hass, self._data | user_input)):
+                options = self._data | user_input
+                title = options.pop(CONF_NAME)
+                return self.async_create_entry(title=title, data={}, options=options)
+        return self.async_show_form(
+            step_id="voices",
+            data_schema=self.add_suggested_values_to_schema(
+                _voices_schema(self.hass, self._data),
+                user_input or _suggested_voices(self._data, DEFAULTS),
+            ),
+            description_placeholders=_voices_placeholders(self.hass, self._data),
             errors=errors,
         )
 
@@ -95,24 +203,47 @@ class TTSFallbackConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class TTSFallbackOptionsFlow(OptionsFlowWithReload):
-    """Change engines, voices and timeout."""
+    """Change engines, voices, options and timeouts."""
+
+    def __init__(self) -> None:
+        """Initialize."""
+        self._data: dict[str, Any] = {}
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Edit the chain."""
+        """Edit engines, language and timeouts."""
         errors: dict[str, str] = {}
         if user_input is not None:
-            if not (errors := _validate(user_input)):
-                return self.async_create_entry(data=user_input)
+            if not (errors := _validate_engines(user_input)):
+                self._data = user_input
+                return await self.async_step_voices()
         own = er.async_get(self.hass).async_get_entity_id(
             "tts", DOMAIN, self.config_entry.entry_id
         )
         return self.async_show_form(
             step_id="init",
             data_schema=self.add_suggested_values_to_schema(
-                _schema([own] if own else []),
-                user_input or self.config_entry.options,
+                _engines_schema([own] if own else [], with_name=False),
+                user_input or (DEFAULTS | dict(self.config_entry.options)),
             ),
+            errors=errors,
+        )
+
+    async def async_step_voices(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Edit voices and extra options."""
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            if not (errors := _validate_voices(self.hass, self._data | user_input)):
+                return self.async_create_entry(data=self._data | user_input)
+        return self.async_show_form(
+            step_id="voices",
+            data_schema=self.add_suggested_values_to_schema(
+                _voices_schema(self.hass, self._data),
+                user_input or _suggested_voices(self._data, self.config_entry.options),
+            ),
+            description_placeholders=_voices_placeholders(self.hass, self._data),
             errors=errors,
         )

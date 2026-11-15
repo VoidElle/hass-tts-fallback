@@ -8,7 +8,7 @@ Home Assistant integration that adds one TTS entity. It renders speech with a **
 
 | Page | Description |
 |------|-------------|
-| [Configuration](configuration.md) | Setup form, every field, changing settings later, voice names |
+| [Configuration](configuration.md) | Setup form, every field, voices, extra engine options, timeouts |
 | [How it works](how-it-works.md) | Failover rules, timeouts, language mapping, audio format, caching |
 | [Assist pipeline](assist-pipeline.md) | Using the entity in a voice pipeline, testing the failover, timings |
 
@@ -28,7 +28,7 @@ Manual: copy `custom_components/tts_fallback/` into your Home Assistant `custom_
 ### Adding the entity
 1. **Settings → Devices & Services → + Add Integration**
 2. Search **TTS Fallback**
-3. Pick the primary and fallback engines, their voices, the language and the timeout
+3. Step 1: name, primary and fallback engines, language, timeouts. Step 2: voices and extra engine options
 4. Use `tts.voce_con_fallback` as the TTS engine of your Assist pipeline
 
 ---

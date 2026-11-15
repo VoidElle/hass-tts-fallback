@@ -4,12 +4,12 @@
 
 The entity holds a chain of two engines:
 
-| Position | Engine | Voice | Time limit |
-|----------|--------|-------|------------|
-| 1 | Primary engine | Primary voice | **Primary timeout** (default 3 s) |
-| 2 | Fallback engine | Fallback voice | 30 s, fixed |
+| Position | Engine | Options passed | Time limit |
+|----------|--------|----------------|------------|
+| 1 | Primary engine | Primary voice + primary extra options | **Primary timeout** (default 3 s) |
+| 2 | Fallback engine | Fallback voice + fallback extra options | **Fallback timeout** (default 30 s) |
 
-For each message the entity tries position 1, then position 2, and returns the first audio produced. The fallback gets a long, fixed limit because nothing comes after it.
+For each message the entity tries position 1, then position 2, and returns the first audio produced. The fallback gets a longer limit by default because nothing comes after it.
 
 ## When an engine counts as failed
 
@@ -30,7 +30,7 @@ If both engines fail, the call raises `All TTS engines failed: <primary>: <reaso
 Each engine is called through Home Assistant's TTS manager, the same path `tts.speak` uses:
 
 - **Language**: mapped to the engine's own spelling (see [Configuration → Language](configuration.md#language))
-- **Options**: only `voice`, set to the configured voice name. Nothing else is passed
+- **Options**: the configured extra options, plus `voice` when a voice is set. Options given by the caller are not passed on
 - **File cache**: off for the inner engines. Home Assistant already caches this entity's result, so the audio is not stored twice
 
 ## Audio format

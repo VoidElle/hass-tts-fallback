@@ -19,8 +19,8 @@ Typical setup: [Microsoft Edge TTS](https://github.com/hasscc/hass-edge-tts) (`i
 - 🔁 **Automatic fallback**: on an error, on empty audio, or when the primary produces no audio within the timeout
 - ⏱️ **Time-to-first-audio timeout**: a slow primary is abandoned after a set time (3 s by default), not after the whole message
 - 🌍 **Language mapping**: each engine gets the language in its own spelling (`it-IT`, `it_IT`, `it`)
-- 🎙️ **Per-engine voice**: a separate voice name for the primary and for the fallback
-- 🧩 **UI configuration**: set up and change everything from **Settings**, no YAML
+- 🎙️ **Per-engine voice and options**: voice picked from the engine's list (or typed), plus any other option the engine accepts (rate, pitch, speaker, ...)
+- 🧩 **UI configuration**: engines, voices, options, language and both timeouts set up and changed from **Settings**, no YAML
 - 🪵 **Logged failures**: every failover writes a warning with the engine and the reason
 
 ## Requirements 📋
@@ -42,18 +42,29 @@ Typical setup: [Microsoft Edge TTS](https://github.com/hasscc/hass-edge-tts) (`i
 1. Go to **Settings -> Devices & Services**
 2. Click **+ Add Integration**
 3. Search for **"TTS Fallback"**
-4. Fill in the form:
+4. Fill in the two steps of the form:
+
+**Step 1: Engines**
 
 | Field | Default | Description |
 |---|---|---|
+| Name | `Voce con fallback` | Name of the entity (gives `tts.voce_con_fallback`) |
 | Primary engine | `tts.edge_tts` | TTS entity tried first |
-| Primary voice | `it-IT-IsabellaNeural` | Voice for the primary engine. Empty = engine default |
 | Fallback engine | `tts.piper` | TTS entity used when the primary fails |
-| Fallback voice | `it_IT-serena-medium` | Voice for the fallback engine. Empty = engine default |
 | Language | `it-IT` | Language this entity speaks |
 | Primary timeout | `3` s | Longest wait for the primary's first audio (0.5–30 s) |
+| Fallback timeout | `30` s | Longest wait for the fallback's first audio (1–120 s) |
 
-The entity `tts.voce_con_fallback` is created. Every field can be changed later with **Configure** on the integration entry; saving reloads the entry.
+**Step 2: Voices and engine options**
+
+| Field | Default | Description |
+|---|---|---|
+| Primary voice | `it-IT-IsabellaNeural` | Dropdown of the engine's voices when it lists them, or any typed name. Empty = engine default |
+| Primary extra options | | Other options for the primary, as YAML (e.g. Edge `rate`, `pitch`, `volume`) |
+| Fallback voice | `it_IT-serena-medium` | As above, for the fallback |
+| Fallback extra options | | Other options for the fallback (e.g. Piper `speaker`) |
+
+The form lists the options each engine accepts and rejects the others. Everything except the name can be changed later with **Configure** on the integration entry; saving reloads the entry.
 
 Full field reference: [Configuration](docs/configuration.md).
 
@@ -66,8 +77,8 @@ Testing the failover and reading pipeline timings: [Assist pipeline](docs/assist
 
 ## How it works ⚙️
 For each message:
-1. The primary engine renders it, with the configured voice and with file caching off.
-2. If the primary raises an error, returns no audio, or sends no audio before the timeout, a warning is logged and the fallback engine renders the message. The fallback gets up to 30 seconds.
+1. The primary engine renders it, with the configured voice and options and with file caching off.
+2. If the primary raises an error, returns no audio, or sends no audio before the timeout, a warning is logged and the fallback engine renders the message, within its own timeout (30 s by default).
 3. The audio of the engine that answered is returned in that engine's format (Edge: mp3, Piper: wav). Home Assistant converts it to the format the caller asks for.
 4. If both engines fail, the call fails with an error that lists both reasons.
 
@@ -76,7 +87,8 @@ Details: [How it works](docs/how-it-works.md).
 ## Limitations ⚠️
 - **No streaming input.** The entity waits for the full text before speaking. With an LLM conversation agent, a pipeline that used a streaming engine (such as Piper over Wyoming) starts speaking long answers later.
 - **Cached fallback audio.** Home Assistant caches this entity's output per message. A message once rendered by the fallback keeps the fallback voice until the TTS cache is cleared.
-- **No per-call options.** The entity accepts no options such as `voice`; it uses the voices set in the entry. Only Home Assistant's preferred-format options (`preferred_format`, sample rate, and so on) pass through.
+- **No per-call options.** A call to the entity cannot pass options such as `voice`; it uses the voices and options set in the entry. Only Home Assistant's preferred-format options (`preferred_format`, sample rate, and so on) pass through.
+- **Two engines.** The chain is one primary and one fallback. For a third voice, chain a second TTS Fallback entity as the fallback of the first. Do not make a loop (A falls back to B, B falls back to A).
 - **Edge TTS is unofficial.** It relies on a Microsoft service that is not a public API and can stop working, which is the reason this integration exists.
 
 ## Documentation 📖
