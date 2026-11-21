@@ -2,6 +2,14 @@
 
 from __future__ import annotations
 
+import re
+
+# Sentence punctuation glued to the next sentence: "la luce è accesa.Vuoi altro?".
+# Engines read that as a domain name ("accesa punto Vuoi"). Two letters or
+# digits before the mark keep abbreviations such as "S.p.A." and "U.S.A." intact;
+# an uppercase letter after it keeps decimals ("23.5") and file names intact.
+_GLUED_SENTENCE = re.compile(r"(?<=[^\W_]{2})([.!?;:])(?=[A-ZÀ-ÖØ-Þ])")
+
 
 def _norm(language: str) -> str:
     return language.replace("_", "-").lower()
@@ -54,3 +62,8 @@ def default_language(language: str, country: str | None) -> str:
 def language_variants(language: str) -> list[str]:
     """Spellings of a language this entity accepts from callers."""
     return sorted({language, language.replace("-", "_"), language.split("-")[0]})
+
+
+def normalize_text(message: str) -> str:
+    """Add the missing space between sentences glued together by an LLM."""
+    return _GLUED_SENTENCE.sub(r"\1 ", message)

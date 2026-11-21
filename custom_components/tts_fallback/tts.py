@@ -27,7 +27,7 @@ from .const import (
     CONF_TIMEOUT,
     DEFAULTS,
 )
-from .helpers import language_variants, pick_language
+from .helpers import language_variants, normalize_text, pick_language
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -78,6 +78,7 @@ class FallbackTTSEntity(TextToSpeechEntity):
         if self.entity_id in active:
             raise HomeAssistantError(f"loop: {self.entity_id} is already rendering this message")
         token = _ACTIVE.set(active | {self.entity_id})
+        message = normalize_text(message)
         try:
             failures: list[str] = []
             for engine, engine_options, timeout in self._chain:

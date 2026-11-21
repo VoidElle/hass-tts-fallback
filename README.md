@@ -22,6 +22,7 @@ Typical setup: [Microsoft Edge TTS](https://github.com/hasscc/hass-edge-tts) (e.
 - 🌍 **Language mapping**: each engine gets the language in its own spelling (`it-IT`, `it_IT`, `it`)
 - 🎙️ **Per-engine voice and options**: voice picked from the engine's list (or typed), plus any other option the engine accepts (rate, pitch, speaker, ...)
 - 🧩 **UI configuration**: engines, voices, options, language and both timeouts set up and changed from **Settings**, no YAML
+- ✍️ **Sentence spacing fix**: sentences glued together by an LLM (`la luce è accesa.Vuoi altro?`) get their missing space, so engines don't read the period aloud as "dot"
 - 🪵 **Logged failures**: every failover writes a warning with the engine and the reason
 
 ## Requirements 📋
@@ -78,6 +79,7 @@ Testing the failover and reading pipeline timings: [Assist pipeline](docs/assist
 
 ## How it works ⚙️
 For each message:
+1. A missing space after `.`, `!`, `?`, `;` or `:` between two sentences is added (`fine.Il` → `fine. Il`); decimals and abbreviations are left alone.
 1. The primary engine renders it, with the configured voice and options and with file caching off.
 2. If the primary raises an error, returns no audio, or sends no audio before the timeout, a warning is logged and the fallback engine renders the message, within its own timeout (30 s by default).
 3. The audio of the engine that answered is returned in that engine's format (Edge: mp3, Piper: wav). Home Assistant converts it to the format the caller asks for.

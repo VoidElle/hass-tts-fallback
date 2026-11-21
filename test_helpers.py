@@ -30,4 +30,14 @@ assert default("it", "IT") == "it-IT"
 assert default("en", "us") == "en-US"
 assert default("en-GB", "IT") == "en-GB"  # already regional
 assert default("de", None) == "de"
+norm = helpers.normalize_text
+assert norm("la luce è accesa.Vuoi altro?") == "la luce è accesa. Vuoi altro?"
+assert norm("Fatto.Serve altro?Dimmi!Ok") == "Fatto. Serve altro? Dimmi! Ok"
+assert norm("alle 18.La sveglia") == "alle 18. La sveglia"
+assert norm("È così.Perché?") == "È così. Perché?"
+assert norm("Ciao. Come stai?") == "Ciao. Come stai?"  # already spaced
+assert norm("Ci sono 23.5 gradi") == "Ci sono 23.5 gradi"  # decimal
+assert norm("Rossi S.p.A. e U.S.A.") == "Rossi S.p.A. e U.S.A."  # abbreviations
+assert norm("apri config.yaml ora") == "apri config.yaml ora"  # lowercase after
+assert norm("Attendi...Poi") == "Attendi...Poi"  # ellipsis left as is
 print("ok")
